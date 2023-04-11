@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"net/http"
 	"strings"
@@ -9,7 +10,12 @@ import (
 )
 
 func main() {
-	res, err := http.Get("https://go.dev/")
+	var searchWord, searchSite string
+	flag.StringVar(&searchWord, "w", "go", "search word")
+	flag.StringVar(&searchSite, "s", "https://go.dev/", "search site")
+	flag.Parse()
+
+	res, err := http.Get(searchSite)
 
 	if err != nil {
 		fmt.Println("Err", err)
@@ -21,7 +27,7 @@ func main() {
 	doc.Find("a").Each(func(index int, item *goquery.Selection) {
 		attr, _ := item.Attr("href")
 		urls := item.Text()
-		if strings.Contains(strings.ToLower(urls), "go") || strings.Contains(attr, "go") {
+		if strings.Contains(strings.ToLower(urls), searchWord) || strings.Contains(attr, searchWord) {
 			fmt.Println(attr)
 		}
 	})
